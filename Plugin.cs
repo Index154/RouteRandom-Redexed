@@ -5,23 +5,29 @@ using HarmonyLib;
 
 namespace RouteRandom;
 
-[BepInPlugin(ModGuid, ModName, ModVersion)]
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class RouteRandomBase : BaseUnityPlugin
 {
-    public const string ModGuid = "stormytuna.RouteRandom";
-    public const string ModName = "RouteRandom";
-    public const string ModVersion = "1.3.2";
-
-    public static readonly ManualLogSource Log = BepInEx.Logging.Logger.CreateLogSource(ModGuid);
-
-    private readonly Harmony harmony = new(ModGuid);
+    public static RouteRandomBase Instance { get; private set; } = null!;
+    internal static ManualLogSource Log { get; private set; } = null!;
+    internal static Harmony? Harmony { get; set; }
 
     private void Awake() {
-        Log.LogInfo($"{ModName} has awoken!");
+        Log.LogInfo($"{MyPluginInfo.PLUGIN_GUID} has awoken!");
 
         LoadConfigs();
 
-        harmony.PatchAll();
+        Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
+        Harmony.PatchAll();
+    }
+
+    internal static void Unpatch()
+    {
+        Log.LogDebug("Unpatching...");
+
+        Harmony?.UnpatchSelf();
+
+        Log.LogDebug("Finished unpatching!");
     }
 
     #region Config
