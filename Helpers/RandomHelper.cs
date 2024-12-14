@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace RouteRandom.Helpers;
+namespace RouteRandomRedexed.Helpers;
 
 public static class RandomHelper
 {

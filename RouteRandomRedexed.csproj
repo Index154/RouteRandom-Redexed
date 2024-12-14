@@ -2,8 +2,8 @@
 
     <!-- BepInEx Properties -->
     <PropertyGroup>
-        <AssemblyName>Index154.RouteRandom-Redexed</AssemblyName>
-        <Product>RouteRandom-Redexed</Product>
+        <AssemblyName>Index154.RouteRandomRedexed</AssemblyName>
+        <Product>RouteRandomRedexed</Product>
         <!-- Change to whatever version you're currently on. -->
         <Version>1.4.0</Version>
     </PropertyGroup>
@@ -11,7 +11,7 @@
     <!-- Project Properties -->
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <RootNamespace>RouteRandom-Redexed</RootNamespace>
+        <RootNamespace>RouteRandomRedexed</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>

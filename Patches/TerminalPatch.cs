@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using RouteRandom.Helpers;
+using RouteRandomRedexed.Helpers;
 using Random = System.Random;
 
-namespace RouteRandom.Patches;
+namespace RouteRandomRedexed.Patches;
 
 [HarmonyPatch(typeof(Terminal))]
 public class TerminalPatch
@@ -77,8 +77,8 @@ public class TerminalPatch
             __instance.AddKeywords(randomKeyword, randomFilterWeatherKeyword);
             __instance.AddCompatibleNounsToKeyword("Route", routeRandomCompatibleNoun, routeRandomFilterWeatherCompatibleNoun);
         } catch (Exception e) {
-            RouteRandomBase.Log.LogError("Failed to add Terminal keywords and compatible nouns!");
-            RouteRandomBase.Log.LogError(e);
+            RouteRandomRedexed.Log.LogError("Failed to add Terminal keywords and compatible nouns!");
+            RouteRandomRedexed.Log.LogError(e);
         }
     }
 
@@ -86,21 +86,21 @@ public class TerminalPatch
     [HarmonyPatch(nameof(Terminal.ParsePlayerSentence))]
     public static TerminalNode RouteToRandomPlanet(TerminalNode __result, Terminal __instance) {
         if (__result is null || __instance is null) {
-            RouteRandomBase.Log.LogInfo($"Terminal node was null? ({__result is null})");
-            RouteRandomBase.Log.LogInfo($"Terminal was null? ({__instance is null})");
+            RouteRandomRedexed.Log.LogInfo($"Terminal node was null? ({__result is null})");
+            RouteRandomRedexed.Log.LogInfo($"Terminal was null? ({__instance is null})");
             return __result;
         }
 
         bool choseRouteRandom = __result.name == "routeRandom";
         bool choseRouteRandomFilterWeather = __result.name == "routeRandomFilterWeather";
         if (!choseRouteRandom && !choseRouteRandomFilterWeather) {
-            RouteRandomBase.Log.LogInfo($"Didn't choose random or randomfilterweather (chose {__result.name})");
+            RouteRandomRedexed.Log.LogInfo($"Didn't choose random or randomfilterweather (chose {__result.name})");
             return __result;
         }
 
         // .Distinct check here as Dine was registered twice for some reason? Didn't bother looking into why :P
         List<CompatibleNoun> routePlanetNodes = routeKeyword.compatibleNouns.Where(noun => noun.ResultIsRealMoon() && noun.ResultIsAffordable()).Distinct(new CompatibleNounComparer()).ToList();
-        RouteRandomBase.Log.LogInfo($"Moons before filtering: {routePlanetNodes.Count}");
+        RouteRandomRedexed.Log.LogInfo($"Moons before filtering: {routePlanetNodes.Count}");
 
         if (choseRouteRandomFilterWeather) {
             foreach (CompatibleNoun compatibleNoun in routePlanetNodes.ToList()) {
@@ -111,52 +111,64 @@ public class TerminalPatch
                 }
             }
 
-            RouteRandomBase.Log.LogInfo($"Moons after filtering weather: {routePlanetNodes.Count}");
+            RouteRandomRedexed.Log.LogInfo($"Moons after filtering weather: {routePlanetNodes.Count}");
         }
 
+        // Remove moons not in the current constellation
+        if (RouteRandomRedexed.constellationsLoaded && RouteRandomRedexed.ConfigConstellationSupport.Value) {
+            foreach (CompatibleNoun compatibleNoun in routePlanetNodes.ToList()) {
+                TerminalNode confirmNode = compatibleNoun.result.GetNodeAfterConfirmation();
+                SelectableLevel moonLevel = StartOfRound.Instance.levels[confirmNode.buyRerouteToMoon];
+                if (!ConstellationsCompat.IsLevelInConstellation(moonLevel)) {
+                    routePlanetNodes.Remove(compatibleNoun);
+                }
+            }
 
-        if (RouteRandomBase.ConfigDifferentPlanetEachTime.Value) {
+            RouteRandomRedexed.Log.LogInfo($"Moons after filtering constellation: {routePlanetNodes.Count}");
+        }
+
+        if (RouteRandomRedexed.ConfigDifferentPlanetEachTime.Value) {
             routePlanetNodes.RemoveAll(rpn => rpn.result.GetNodeAfterConfirmation().NodeRoutesToCurrentOrbitedMoon());
-            RouteRandomBase.Log.LogInfo($"Moons after filtering orbited moon: {routePlanetNodes.Count}");
+            RouteRandomRedexed.Log.LogInfo($"Moons after filtering orbited moon: {routePlanetNodes.Count}");
         }
 
         // Almost never happens, but sanity check
         if (routePlanetNodes.Count <= 0) {
-            RouteRandomBase.Log.LogInfo("No suitable moons found D:");
+            RouteRandomRedexed.Log.LogInfo("No suitable moons found D:");
             return noSuitablePlanetsNode;
         }
 
         TerminalNode chosenNode = rand.NextFromCollection(routePlanetNodes).result;
-        RouteRandomBase.Log.LogInfo($"Chosen moon: {chosenNode.name}");
+        RouteRandomRedexed.Log.LogInfo($"Chosen moon: {chosenNode.name}");
 
-        if (RouteRandomBase.ConfigRemoveCostOfCostlyPlanets.Value) {
+        if (RouteRandomRedexed.ConfigRemoveCostOfCostlyPlanets.Value) {
             if (TerminalHelper.TryMakeRouteMoonNodeFree(chosenNode, out TerminalNode freeNode)) {
                 chosenNode = freeNode;
             }
 
-            RouteRandomBase.Log.LogInfo("Made moon free!");
+            RouteRandomRedexed.Log.LogInfo("Made moon free!");
         }
 
-        if (RouteRandomBase.ConfigHidePlanet.Value) {
+        if (RouteRandomRedexed.ConfigHidePlanet.Value) {
             TerminalNode confirmationNode = chosenNode.GetNodeAfterConfirmation();
             hidePlanetHackNode.buyRerouteToMoon = confirmationNode.buyRerouteToMoon;
-            hidePlanetHackNode.itemCost = RouteRandomBase.ConfigRemoveCostOfCostlyPlanets.Value ? 0 : confirmationNode.itemCost;
-            RouteRandomBase.Log.LogInfo("Hidden moon!");
+            hidePlanetHackNode.itemCost = RouteRandomRedexed.ConfigRemoveCostOfCostlyPlanets.Value ? 0 : confirmationNode.itemCost;
+            RouteRandomRedexed.Log.LogInfo("Hidden moon!");
             return hidePlanetHackNode;
         }
 
-        return RouteRandomBase.ConfigSkipConfirmation.Value ? chosenNode.GetNodeAfterConfirmation() : chosenNode;
+        return RouteRandomRedexed.ConfigSkipConfirmation.Value ? chosenNode.GetNodeAfterConfirmation() : chosenNode;
     }
 
     private static bool WeatherIsAllowed(LevelWeatherType weatherType) {
         return weatherType switch {
-            LevelWeatherType.None => RouteRandomBase.ConfigAllowMildWeather.Value,
-            LevelWeatherType.DustClouds => RouteRandomBase.ConfigAllowDustCloudsWeather.Value,
-            LevelWeatherType.Rainy => RouteRandomBase.ConfigAllowRainyWeather.Value,
-            LevelWeatherType.Stormy => RouteRandomBase.ConfigAllowStormyWeather.Value,
-            LevelWeatherType.Foggy => RouteRandomBase.ConfigAllowFoggyWeather.Value,
-            LevelWeatherType.Flooded => RouteRandomBase.ConfigAllowFloodedWeather.Value,
-            LevelWeatherType.Eclipsed => RouteRandomBase.ConfigAllowEclipsedWeather.Value,
+            LevelWeatherType.None => RouteRandomRedexed.ConfigAllowMildWeather.Value,
+            LevelWeatherType.DustClouds => RouteRandomRedexed.ConfigAllowDustCloudsWeather.Value,
+            LevelWeatherType.Rainy => RouteRandomRedexed.ConfigAllowRainyWeather.Value,
+            LevelWeatherType.Stormy => RouteRandomRedexed.ConfigAllowStormyWeather.Value,
+            LevelWeatherType.Foggy => RouteRandomRedexed.ConfigAllowFoggyWeather.Value,
+            LevelWeatherType.Flooded => RouteRandomRedexed.ConfigAllowFloodedWeather.Value,
+            LevelWeatherType.Eclipsed => RouteRandomRedexed.ConfigAllowEclipsedWeather.Value,
             _ => false
         };
     }

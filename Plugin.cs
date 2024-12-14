@@ -3,21 +3,22 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 
-namespace RouteRandom;
+namespace RouteRandomRedexed;
 
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-public class RouteRandomBase : BaseUnityPlugin
+[BepInPlugin("Index154.RouteRandom-Redexed", "RouteRandom-Redexed", "1.4.0")]
+public class RouteRandomRedexed : BaseUnityPlugin
 {
-    public static RouteRandomBase Instance { get; private set; } = null!;
+    public static RouteRandomRedexed Instance { get; private set; } = null!;
     internal static ManualLogSource Log { get; private set; } = null!;
     internal static Harmony? Harmony { get; set; }
+    public static bool constellationsLoaded = false;
 
     private void Awake() {
-        Log.LogInfo($"{MyPluginInfo.PLUGIN_GUID} has awoken!");
+        Log.LogInfo($"Index154.RouteRandom-Redexed has awoken!");
 
         LoadConfigs();
 
-        Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
+        Harmony ??= new Harmony("Index154.RouteRandom-Redexed");
         Harmony.PatchAll();
     }
 
@@ -44,6 +45,7 @@ public class RouteRandomBase : BaseUnityPlugin
     public static ConfigEntry<bool> ConfigSkipConfirmation;
     public static ConfigEntry<bool> ConfigDifferentPlanetEachTime;
     public static ConfigEntry<bool> ConfigHidePlanet;
+    public static ConfigEntry<bool> ConfigConstellationSupport;
 
     private void LoadConfigs() {
         ConfigAllowMildWeather = Config.Bind("Allowed Weathers",
@@ -105,6 +107,11 @@ public class RouteRandomBase : BaseUnityPlugin
             "HidePlanet",
             false,
             "Hides the planet you get randomly routed to, both in the terminal response and at the helm. NOTE: This will ALWAYS hide the orbited planet (even when selected manually) and will skip the confirmation screen");
+
+        ConfigConstellationSupport = Config.Bind("General",
+            "LethalConstellationsSupport",
+            true,
+            "Turns on compatibility logic for the mod LethalConstellations. Route random will only select moons from the current constellation if enabled");
     }
 
     #endregion

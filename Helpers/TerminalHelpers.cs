@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using HarmonyLib;
 
-namespace RouteRandom.Helpers;
+namespace RouteRandomRedexed.Helpers;
 
 public static class TerminalHelper
 {
@@ -34,7 +34,7 @@ public static class TerminalHelper
     public static bool ResultIsRealMoon(this CompatibleNoun compatibleNoun) => compatibleNoun.result.buyRerouteToMoon == -2;
 
     public static bool ResultIsAffordable(this CompatibleNoun compatibleNoun) =>
-        compatibleNoun.result.itemCost <= 0 || RouteRandomBase.ConfigAllowCostlyPlanets.Value || RouteRandomBase.ConfigRemoveCostOfCostlyPlanets.Value;
+        compatibleNoun.result.itemCost <= 0 || RouteRandomRedexed.ConfigAllowCostlyPlanets.Value || RouteRandomRedexed.ConfigRemoveCostOfCostlyPlanets.Value;
 
     public static bool TryMakeRouteMoonNodeFree(TerminalNode routeMoonNode, out TerminalNode freeMoonNode) {
         CompatibleNoun confirmCompatibleNoun = routeMoonNode.terminalOptions.FirstOrDefault(node => node.noun.name == "Confirm");

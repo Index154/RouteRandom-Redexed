@@ -1,16 +1,24 @@
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using TMPro;
 using UnityEngine.Video;
 
-namespace RouteRandom.Patches;
+namespace RouteRandomRedexed.Patches;
 
 [HarmonyPatch(typeof(StartOfRound))]
 public class StartOfRoundPatch
 {
+	[HarmonyPostfix]
+    [HarmonyPatch("Start")]
+	private static void ConstellationsCompat(){
+		// Check if LethalConstellations is active
+		if(Chainloader.PluginInfos.ContainsKey("com.github.darmuh.LethalConstellations")) RouteRandomRedexed.constellationsLoaded = true;
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(nameof(StartOfRound.SetMapScreenInfoToCurrentLevel))]
     public static void HideMapScreenInfo(StartOfRound __instance, VideoPlayer ___screenLevelVideoReel, TextMeshProUGUI ___screenLevelDescription) {
-        if (__instance.currentLevel.name == "CompanyBuildingLevel" || !RouteRandomBase.ConfigHidePlanet.Value) {
+        if (__instance.currentLevel.name == "CompanyBuildingLevel" || !RouteRandomRedexed.ConfigHidePlanet.Value) {
             return;
         }
 
