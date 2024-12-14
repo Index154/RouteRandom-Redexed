@@ -1,4 +1,8 @@
-# RouteRandom
+# RouteRandom-Redexed
+
+This fork adds support for LethalConstellations. No other changes are planned.
+
+# RouteRandom (original)
 
 Route Random adds a couple commands for routing to a random planet. Supports (almost all) modded moons!
 
