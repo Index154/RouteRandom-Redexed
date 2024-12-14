@@ -14,12 +14,15 @@ public class RouteRandomRedexed : BaseUnityPlugin
     public static bool constellationsLoaded = false;
 
     private void Awake() {
-        Log.LogInfo($"{MyPluginInfo.PLUGIN_GUID} has loaded!");
+        Log = base.Logger;
+        Instance = this;
 
         LoadConfigs();
 
         Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
         Harmony.PatchAll();
+        
+        Log.LogInfo($"{MyPluginInfo.PLUGIN_GUID} has loaded!");
     }
 
     internal static void Unpatch()
