@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace RouteRandomRedexed;
 
-[BepInPlugin("Index154.RouteRandom-Redexed", "RouteRandom-Redexed", "1.4.0")]
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class RouteRandomRedexed : BaseUnityPlugin
 {
     public static RouteRandomRedexed Instance { get; private set; } = null!;
@@ -14,11 +14,11 @@ public class RouteRandomRedexed : BaseUnityPlugin
     public static bool constellationsLoaded = false;
 
     private void Awake() {
-        Log.LogInfo($"Index154.RouteRandom-Redexed has awoken!");
+        Log.LogInfo($"{MyPluginInfo.PLUGIN_GUID} has loaded!");
 
         LoadConfigs();
 
-        Harmony ??= new Harmony("Index154.RouteRandom-Redexed");
+        Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
         Harmony.PatchAll();
     }
 
