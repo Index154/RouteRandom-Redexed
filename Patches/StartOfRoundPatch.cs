@@ -10,9 +10,10 @@ public class StartOfRoundPatch
 {
 	[HarmonyPostfix]
     [HarmonyPatch("Start")]
-	private static void ConstellationsCompat(){
+	private static void Compat(){
 		// Check if LethalConstellations is active
 		if(Chainloader.PluginInfos.ContainsKey("com.github.darmuh.LethalConstellations")) RouteRandomRedexed.constellationsLoaded = true;
+        if(Chainloader.PluginInfos.ContainsKey("Index154.RandomRouteOnly")) RouteRandomRedexed.randomRouteOnlyLoaded = true;
     }
 
     [HarmonyPostfix]

@@ -86,15 +86,15 @@ public class TerminalPatch
     [HarmonyPatch(nameof(Terminal.ParsePlayerSentence))]
     public static TerminalNode RouteToRandomPlanet(TerminalNode __result, Terminal __instance) {
         if (__result is null || __instance is null) {
-            RouteRandomRedexed.Log.LogInfo($"Terminal node was null? ({__result is null})");
-            RouteRandomRedexed.Log.LogInfo($"Terminal was null? ({__instance is null})");
+            RouteRandomRedexed.Log.LogDebug($"Terminal node was null? ({__result is null})");
+            RouteRandomRedexed.Log.LogDebug($"Terminal was null? ({__instance is null})");
             return __result;
         }
 
         bool choseRouteRandom = __result.name == "routeRandom";
         bool choseRouteRandomFilterWeather = __result.name == "routeRandomFilterWeather";
         if (!choseRouteRandom && !choseRouteRandomFilterWeather) {
-            RouteRandomRedexed.Log.LogInfo($"Didn't choose random or randomfilterweather (chose {__result.name})");
+            RouteRandomRedexed.Log.LogDebug($"Didn't choose random or randomfilterweather (chose {__result.name})");
             return __result;
         }
 
@@ -125,6 +125,12 @@ public class TerminalPatch
             }
 
             RouteRandomRedexed.Log.LogInfo($"Moons after filtering constellation: {routePlanetNodes.Count}");
+        }
+
+        // Remove moons that are in the RandomRouteOnly recent levels list
+        if (RouteRandomRedexed.randomRouteOnlyLoaded) {
+            routePlanetNodes = RandomRouteOnlyCompat.FilterRecentLevels(routePlanetNodes);
+            RouteRandomRedexed.Log.LogInfo($"Moons after filtering RandomRouteOnly recent moons list: {routePlanetNodes.Count}");
         }
 
         if (RouteRandomRedexed.ConfigDifferentPlanetEachTime.Value) {

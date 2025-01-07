@@ -12,6 +12,7 @@ public class RouteRandomRedexed : BaseUnityPlugin
     internal static ManualLogSource Log { get; private set; } = null!;
     internal static Harmony? Harmony { get; set; }
     public static bool constellationsLoaded = false;
+    public static bool randomRouteOnlyLoaded = false;
 
     private void Awake() {
         Log = base.Logger;

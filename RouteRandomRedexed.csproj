@@ -5,7 +5,7 @@
         <AssemblyName>Index154.RouteRandomRedexed</AssemblyName>
         <Product>RouteRandomRedexed</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>1.4.0</Version>
+        <Version>1.5.0</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->
@@ -49,6 +49,10 @@
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all"/>
         <Reference Include="LethalConstellations">
             <HintPath>..\LethalConstellations.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="RandomRouteOnly">
+            <HintPath>..\..\RandomRouteOnly\RandomRouteOnly\bin\Debug\netstandard2.1\Index154.RandomRouteOnly.dll</HintPath>
             <Private>False</Private>
         </Reference>
     </ItemGroup>
