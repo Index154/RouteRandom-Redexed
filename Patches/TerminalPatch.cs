@@ -114,6 +114,11 @@ public class TerminalPatch
             RouteRandomRedexed.Log.LogInfo($"Moons after filtering weather: {routePlanetNodes.Count}");
         }
 
+        if (RouteRandomRedexed.ConfigDifferentPlanetEachTime.Value) {
+            routePlanetNodes.RemoveAll(rpn => rpn.result.GetNodeAfterConfirmation().NodeRoutesToCurrentOrbitedMoon());
+            RouteRandomRedexed.Log.LogInfo($"Moons after filtering orbited moon: {routePlanetNodes.Count}");
+        }
+
         // Remove moons not in the current constellation
         if (RouteRandomRedexed.constellationsLoaded && RouteRandomRedexed.ConfigConstellationSupport.Value) {
             foreach (CompatibleNoun compatibleNoun in routePlanetNodes.ToList()) {
@@ -133,18 +138,19 @@ public class TerminalPatch
             RouteRandomRedexed.Log.LogInfo($"Moons after filtering RandomRouteOnly recent moons list: {routePlanetNodes.Count}");
         }
 
-        if (RouteRandomRedexed.ConfigDifferentPlanetEachTime.Value) {
-            routePlanetNodes.RemoveAll(rpn => rpn.result.GetNodeAfterConfirmation().NodeRoutesToCurrentOrbitedMoon());
-            RouteRandomRedexed.Log.LogInfo($"Moons after filtering orbited moon: {routePlanetNodes.Count}");
-        }
-
         // Almost never happens, but sanity check
         if (routePlanetNodes.Count <= 0) {
             RouteRandomRedexed.Log.LogInfo("No suitable moons found D:");
             return noSuitablePlanetsNode;
         }
 
-        TerminalNode chosenNode = rand.NextFromCollection(routePlanetNodes).result;
+        // Use RandomRouteOnly moon weights for selection if enabled
+        TerminalNode chosenNode;
+        if(RouteRandomRedexed.randomRouteOnlyLoaded && RouteRandomRedexed.ConfigUseWeights.Value){
+            chosenNode = RandomRouteOnlyCompat.GetWeightedRandom(routePlanetNodes);
+        }else{
+            chosenNode = rand.NextFromCollection(routePlanetNodes).result;
+        }
         RouteRandomRedexed.Log.LogInfo($"Chosen moon: {chosenNode.name}");
 
         if (RouteRandomRedexed.ConfigRemoveCostOfCostlyPlanets.Value) {

@@ -50,6 +50,7 @@ public class RouteRandomRedexed : BaseUnityPlugin
     public static ConfigEntry<bool> ConfigDifferentPlanetEachTime;
     public static ConfigEntry<bool> ConfigHidePlanet;
     public static ConfigEntry<bool> ConfigConstellationSupport;
+    public static ConfigEntry<bool> ConfigUseWeights;
 
     private void LoadConfigs() {
         ConfigAllowMildWeather = Config.Bind("Allowed Weathers",
@@ -116,6 +117,11 @@ public class RouteRandomRedexed : BaseUnityPlugin
             "LethalConstellationsSupport",
             true,
             "Turns on compatibility logic for the mod LethalConstellations. Route random will only select moons from the current constellation if enabled");
+
+        ConfigUseWeights = Config.Bind("General",
+            "Use RandomRouteOnly moon weights",
+            true,
+            "Whether to use the moon weights configured in RandomRouteOnly's config for random moon selection");
     }
 
     #endregion

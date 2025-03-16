@@ -9,4 +9,5 @@ public static class RandomHelper
         int randomIndex = rand.Next(collection.Count);
         return collection[randomIndex];
     }
+    
 }
