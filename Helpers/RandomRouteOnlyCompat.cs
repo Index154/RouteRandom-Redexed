@@ -44,7 +44,7 @@ internal class RandomRouteOnlyCompat
                 weightSum += kvp.Value.Value;
             }
         }
-        int selectionRoll = Random.Range(1, weightSum);
+        int selectionRoll = Random.Range(1, weightSum + 1);
         RouteRandomRedexed.Log.LogDebug("Level selection roll = " + selectionRoll);
         int index = 0;
         foreach(int levelID in levelIDs){
