@@ -61,10 +61,7 @@ public static class TerminalHelper
             itemCost = 0,
             overrideOptions = true,
             terminalOptions = new[] {
-                denyCompatibleNoun, new CompatibleNoun {
-                    noun = confirmCompatibleNoun.noun,
-                    result = freeConfirmNode
-                }
+                denyCompatibleNoun, new CompatibleNoun (confirmCompatibleNoun.noun, freeConfirmNode)
             }
         };
         return true;

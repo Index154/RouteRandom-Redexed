@@ -53,22 +53,22 @@ public class TerminalPatch
                 compatibleNouns = Array.Empty<CompatibleNoun>()
             };
 
-            routeRandomCompatibleNoun = new CompatibleNoun {
-                noun = randomKeyword,
-                result = new TerminalNode {
+            routeRandomCompatibleNoun = new CompatibleNoun(
+                randomKeyword,
+                new TerminalNode {
                     name = "routeRandom",
                     buyRerouteToMoon = -1,
                     terminalOptions = Array.Empty<CompatibleNoun>()
                 }
-            };
-            routeRandomFilterWeatherCompatibleNoun = new CompatibleNoun {
-                noun = randomFilterWeatherKeyword,
-                result = new TerminalNode {
+            );
+            routeRandomFilterWeatherCompatibleNoun = new CompatibleNoun (
+                randomFilterWeatherKeyword,
+                new TerminalNode {
                     name = "routeRandomFilterWeather",
                     buyRerouteToMoon = -1,
                     terminalOptions = Array.Empty<CompatibleNoun>()
                 }
-            };
+            );
 
             TerminalKeyword moonsKeyword = __instance.GetKeyword("Moons");
             moonsKeyword.specialKeywordResult.displayText +=
