@@ -5,7 +5,7 @@
         <AssemblyName>Index154.RouteRandomRedexed</AssemblyName>
         <Product>RouteRandomRedexed</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>1.6.2</Version>
+        <Version>1.7.0</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->
